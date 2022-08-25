@@ -1,0 +1,67 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE_PASSWORD}
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - 8001:80
+    restart: always
+    volumes:
+      - wp_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      # WORDPRESS_CONFIG_EXTRA: WP_ALLOW_MULTISITE
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:db
+    ports:
+      - 8002:80
+    restart: always
+    environment:
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: somewordpress
+      UPLOAD_LIMIT: 16M
+
+  sftp:
+    image: atmoz/sftp
+    ports:
+      - "2222:22"
+    volumes:
+      - wp_data:/home/wp_redgreenbird/files
+    restart: always
+    # This command creates a new SFTP user with UID 1001
+    # To be able to edit this files, you need to execute
+    # chmod 1001 _data 
+    # This process will be automated later
+    command: wp_redgreenbird:ThisIsAUltraStrongPassword:1001
+
+  filebrowser:
+    restart: always
+    image: filebrowser/filebrowser
+    volumes:
+      - wp_data:/srv
+      - wp_data:/data
+    ports:
+      - "8003:80"
+
+volumes: 
+  db_data:
+  wp_data:
