@@ -25,3 +25,6 @@ apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 # causing the public key file for the repo to not be detected. 
 # Run the following command and then try to update your repo again: 
 # sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Install docker compose
+apt install docker-compose
