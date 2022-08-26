@@ -71,3 +71,6 @@ services:
 
 volumes:
   data:
+
+# execute this command to create a user for the panel
+# docker-compose run --rm panel php artisan p:user:mak
