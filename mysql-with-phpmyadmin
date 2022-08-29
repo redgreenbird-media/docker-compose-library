@@ -1,0 +1,29 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE_PASSWORD}
+      MYSQL_DATABASE: database
+      MYSQL_USER: root
+      MYSQL_PASSWORD: wordpress
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:db
+    ports:
+      - 8002:80
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: somewordpress
+      UPLOAD_LIMIT: 16M
+      
+volumes: 
+  db_data:
