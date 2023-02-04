@@ -1,14 +1,15 @@
-version: '3.8'
+# This documentation was very useful:
+# https://docs.ibracorp.io/pterodactyl-docker-1/
+
+version: "3.8"
 x-common:
-  database:
-    &db-environment
+  database: &db-environment
     # Do not remove the "&db-password" from the end of the line below, it is important
     # for Panel functionality.
     MYSQL_PASSWORD: &db-password ${{secrets.PTERODACTYL_MYSQL_PASSWORD}}
     MYSQL_ROOT_PASSWORD: ${{secrets.PTERODACTYL_MYSQL_ROOT_PASSWORD}}
 
-  panel:
-    &panel-environment
+  panel: &panel-environment
     APP_URL: "https://gs103.redgreenbird.com"
     # A list of valid timezones can be found here: http://php.net/manual/en/timezones.php
     APP_TIMEZONE: "UTC"
@@ -17,9 +18,8 @@ x-common:
     # Uncomment the line below and set to a non-empty value if you want to use Let's Encrypt
     # to generate an SSL certificate for the Panel.
     # LE_EMAIL: ""
-    
-  mail:
-    &mail-environment
+
+  mail: &mail-environment
     MAIL_FROM: "noreply@rgbi.ch"
     MAIL_DRIVER: "smtp"
     MAIL_HOST: "mail"
@@ -39,7 +39,7 @@ services:
       <<: *db-environment
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
-      
+
   cache:
     image: redis:alpine
     restart: always
@@ -71,19 +71,19 @@ services:
       DB_PORT: "3306"
 
   wings:
-      image: ghcr.io/pterodactyl/wings:v1.6.1
-      restart: always
-      ports:
-        - "8080:8080"
-        - "2022:2022"
-        - "9442:443"
-      tty: true
-      environment:
-        TZ: "UTC"
-        WINGS_UID: 988
-        WINGS_GID: 988
-        WINGS_USERNAME: pterodactyl
-      volumes:
+    image: ghcr.io/pterodactyl/wings:v1.6.1
+    restart: always
+    ports:
+      - "8080:8080"
+      - "2022:2022"
+      - "9442:443"
+    tty: true
+    environment:
+      TZ: "UTC"
+      WINGS_UID: 988
+      WINGS_GID: 988
+      WINGS_USERNAME: pterodactyl
+    volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/var/lib/docker/containers/:/var/lib/docker/containers/"
       - "/etc/pterodactyl/:/etc/pterodactyl/"
@@ -95,6 +95,5 @@ services:
         #- "/srv/daemon-data/:/srv/daemon-data/"
         # Required for ssl if you use let's encrypt. uncomment to use.
         #- "/etc/letsencrypt/:/etc/letsencrypt/"
-
 # execute this command to create a user for the panel
 # docker-compose run --rm panel php artisan p:user:mak
